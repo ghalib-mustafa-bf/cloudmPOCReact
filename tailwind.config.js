@@ -7,6 +7,16 @@ export default {
     theme: {
       extend: {
         colors: {
+          'cloudm': {
+            'dark-bg': '#0a0e27',
+            'blue': '#4285f4',
+            'orange': '#ff6b35',
+            'white': '#ffffff',
+            'light-gray': '#f5f7fa',
+            'text-light': '#a0a9c9',
+            'card-bg': '#1a1f3a',
+            'border': 'rgba(255,255,255,0.1)'
+          },
           'navy': {
             DEFAULT: '#032D60',
             light: '#E8EFF6',
