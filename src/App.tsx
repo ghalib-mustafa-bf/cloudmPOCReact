@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { HelpCircle, ChevronRight, ShoppingCart } from 'lucide-react';
+import { HelpCircle, ChevronRight, ShoppingCart, X, Check, Trash2 } from 'lucide-react';
 import './App.css';
 
 // Types
@@ -115,6 +115,15 @@ function App() {
   const [userCount, setUserCount] = useState(100);
   const [totalPrice, setTotalPrice] = useState(0);
   const [discountInfo, setDiscountInfo] = useState('');
+  
+  // Modal states
+  const [showPricingModal, setShowPricingModal] = useState(false);
+  const [showCartModal, setShowCartModal] = useState(false);
+  const [showQuoteModal, setShowQuoteModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  
+  // Notification state
+  const [notification, setNotification] = useState<{ show: boolean; message: string }>({ show: false, message: '' });
 
   // Calculate price when user count changes
   useEffect(() => {
@@ -142,53 +151,62 @@ function App() {
     }
   };
 
+  const showNotification = (message: string) => {
+    setNotification({ show: true, message });
+    setTimeout(() => {
+      setNotification({ show: false, message: '' });
+    }, 3000);
+  };
+
   const addToQuote = (product: Product) => {
     setCart(prev => [...prev, {
       product,
       quantity: 100,
       timestamp: new Date()
     }]);
-    alert(`${product.name} added to quote!`);
+    showNotification(`${product.name} added to quote!`);
+  };
+
+  const removeFromCart = (index: number) => {
+    setCart(prev => prev.filter((_, i) => i !== index));
+    showNotification('Item removed from quote');
+  };
+
+  const updateQuantity = (index: number, newQuantity: number) => {
+    if (newQuantity > 0) {
+      setCart(prev => prev.map((item, i) => 
+        i === index ? { ...item, quantity: newQuantity } : item
+      ));
+    }
   };
 
   const showPricing = (product: Product) => {
-    const tiers = product.pricingTiers;
-    alert(
-      `Pricing for ${product.name}:\n\n` +
-      tiers.map(tier => 
-        `${tier.min}${tier.max === Infinity ? '+' : `-${tier.max}`} users: $${tier.price}/user/month`
-      ).join('\n') +
-      '\n\nContact sales for custom enterprise pricing.'
-    );
+    setSelectedProduct(product);
+    setShowPricingModal(true);
   };
 
   const generateQuote = () => {
-    alert(
-      'Quote Generation (Salesforce Revenue Cloud Integration):\n\n' +
-      '✓ Creating quote in Revenue Cloud\n' +
-      '✓ Applying volume discounts\n' +
-      '✓ Calculating taxes and fees\n' +
-      '✓ Generating PDF document\n' +
-      '✓ Sending to your email\n\n' +
-      'Quote #Q-2024-1234 has been created!'
-    );
+    setShowQuoteModal(true);
   };
 
-  const viewCart = () => {
-    const cartSummary = cart.map(item => 
-      `• ${item.product.name} (${item.quantity} users)`
-    ).join('\n');
-    
-    alert(
-      'Your Quote Summary:\n\n' + 
-      cartSummary +
-      '\n\nTotal Items: ' + cart.length +
-      '\n\nClick "Convert to Order" to proceed with purchase.'
-    );
+  const calculateCartTotal = () => {
+    return cart.reduce((total, item) => {
+      const tier = item.product.pricingTiers.find(t => 
+        item.quantity >= t.min && item.quantity <= t.max
+      );
+      const price = tier ? tier.price : item.product.pricingTiers[0].price;
+      return total + (price * item.quantity);
+    }, 0);
   };
 
   return (
     <div className="app-container">
+      {/* Notification Toast */}
+      <div className={`notification ${notification.show ? 'show' : ''}`}>
+        <Check size={20} />
+        <span>{notification.message}</span>
+      </div>
+
       {/* Header */}
       <header className="header">
         <nav className="nav">
@@ -447,7 +465,7 @@ function App() {
       {/* Cart Preview */}
       {cart.length > 0 && (
         <div
-          onClick={viewCart}
+          onClick={() => setShowCartModal(true)}
           className="cart-preview active"
         >
           <ShoppingCart size={20} />
@@ -462,6 +480,152 @@ function App() {
           This is a proof of concept demonstration
         </p>
       </footer>
+
+      {/* Pricing Modal */}
+      {showPricingModal && selectedProduct && (
+        <div className="modal-overlay" onClick={() => setShowPricingModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Pricing for {selectedProduct.name}</h3>
+              <button className="modal-close" onClick={() => setShowPricingModal(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="pricing-tiers">
+                {selectedProduct.pricingTiers.map((tier, index) => (
+                  <div key={index} className="pricing-tier">
+                    <div className="tier-users">
+                      {tier.min}{tier.max === Infinity ? '+' : `-${tier.max}`} users
+                    </div>
+                    <div className="tier-price">
+                      ${tier.price}
+                      <span>/user/month</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="pricing-note">
+                <p>Contact sales for custom enterprise pricing and additional volume discounts.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cart Modal */}
+      {showCartModal && (
+        <div className="modal-overlay" onClick={() => setShowCartModal(false)}>
+          <div className="modal-content cart-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Your Quote Summary</h3>
+              <button className="modal-close" onClick={() => setShowCartModal(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            <div className="modal-body">
+              {cart.length === 0 ? (
+                <p className="empty-cart">Your quote is empty</p>
+              ) : (
+                <>
+                  <div className="cart-items">
+                    {cart.map((item, index) => {
+                      const tier = item.product.pricingTiers.find(t => 
+                        item.quantity >= t.min && item.quantity <= t.max
+                      );
+                      const price = tier ? tier.price : item.product.pricingTiers[0].price;
+                      const itemTotal = price * item.quantity;
+                      
+                      return (
+                        <div key={index} className="cart-item">
+                          <div className="cart-item-icon">{item.product.icon}</div>
+                          <div className="cart-item-details">
+                            <h4>{item.product.name}</h4>
+                            <div className="cart-item-pricing">
+                              ${price}/user × 
+                              <input
+                                type="number"
+                                value={item.quantity}
+                                onChange={(e) => updateQuantity(index, parseInt(e.target.value) || 0)}
+                                className="quantity-inline-input"
+                                min="1"
+                              />
+                              users = ${itemTotal.toLocaleString()}
+                            </div>
+                          </div>
+                          <button 
+                            className="remove-item"
+                            onClick={() => removeFromCart(index)}
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="cart-total">
+                    <span>Total:</span>
+                    <span className="total-amount">${calculateCartTotal().toLocaleString()}</span>
+                  </div>
+                  <div className="cart-actions">
+                    <button className="btn-secondary" onClick={() => setShowCartModal(false)}>
+                      Continue Shopping
+                    </button>
+                    <button className="btn-primary" onClick={() => {
+                      setShowCartModal(false);
+                      setShowQuoteModal(true);
+                    }}>
+                      Generate Quote
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Quote Generation Modal */}
+      {showQuoteModal && (
+        <div className="modal-overlay" onClick={() => setShowQuoteModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Quote Generation</h3>
+              <button className="modal-close" onClick={() => setShowQuoteModal(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="quote-generation">
+                <div className="quote-step completed">
+                  <Check size={20} />
+                  <span>Creating quote in Revenue Cloud</span>
+                </div>
+                <div className="quote-step completed">
+                  <Check size={20} />
+                  <span>Applying volume discounts</span>
+                </div>
+                <div className="quote-step completed">
+                  <Check size={20} />
+                  <span>Calculating taxes and fees</span>
+                </div>
+                <div className="quote-step completed">
+                  <Check size={20} />
+                  <span>Generating PDF document</span>
+                </div>
+                <div className="quote-step completed">
+                  <Check size={20} />
+                  <span>Sending to your email</span>
+                </div>
+              </div>
+              <div className="quote-success">
+                <h4>Quote #Q-2024-1234 has been created!</h4>
+                <p>Check your email for the detailed quote document.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
