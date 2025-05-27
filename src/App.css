@@ -19,7 +19,8 @@ body {
 :root {
   --cloudm-dark-bg: #0a0e27;
   --cloudm-blue: #4285f4;
-  --cloudm-orange: #ff6b35;
+  --cloudm-orange: #f06742;  /* Updated to match exact brand color */
+  --cloudm-navy: #0e1c43;   /* Added exact navy from logo */
   --cloudm-white: #ffffff;
   --cloudm-light-gray: #f5f7fa;
   --cloudm-text-light: #a0a9c9;
@@ -53,8 +54,14 @@ body {
   gap: 50px;
 }
 
-.logo img {
+.logo {
+  text-decoration: none;
+  display: inline-block;
+}
+
+.logo svg {
   height: 32px;
+  width: auto;
 }
 
 .nav-links {
@@ -97,7 +104,7 @@ body {
 }
 
 .book-demo-btn {
-  background: #ff6b35;
+  background: var(--cloudm-orange);
   color: white;
   padding: 10px 20px;
   border-radius: 4px;
@@ -111,7 +118,7 @@ body {
 }
 
 .book-demo-btn:hover {
-  background: #e55a2b;
+  background: #d9572e;  /* Darker shade of brand orange */
   transform: translateY(-1px);
 }
 
@@ -132,7 +139,7 @@ body {
   transform: translateY(-50%);
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(255, 107, 53, 0.6) 0%, rgba(255, 107, 53, 0) 70%);
+  background: radial-gradient(circle, rgba(240, 103, 66, 0.6) 0%, rgba(240, 103, 66, 0) 70%);
   filter: blur(100px);
 }
 
@@ -209,7 +216,7 @@ body {
 }
 
 .hero-graphic {
-  filter: drop-shadow(0 20px 50px rgba(255, 107, 53, 0.3));
+  filter: drop-shadow(0 20px 50px rgba(240, 103, 66, 0.3));
   animation: float 6s ease-in-out infinite;
 }
 
@@ -221,7 +228,7 @@ body {
 
 /* E-commerce Banner */
 .ecommerce-banner {
-  background: rgba(255, 107, 53, 0.1);
+  background: rgba(240, 103, 66, 0.1);
   padding: 40px;
   text-align: center;
   border-top: 2px solid var(--cloudm-orange);
@@ -300,14 +307,14 @@ body {
 .product-card:hover {
   transform: translateY(-5px);
   border-color: var(--cloudm-orange);
-  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.2);
+  box-shadow: 0 10px 30px rgba(240, 103, 66, 0.2);
 }
 
 .product-icon {
   width: 100px;
   height: 100px;
   margin: 0 auto 20px;
-  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  background: linear-gradient(135deg, var(--cloudm-orange) 0%, #f7931e 100%);
   border-radius: 20px;
   display: flex;
   align-items: center;
@@ -348,7 +355,7 @@ body {
 }
 
 .discount-badge {
-  background: rgba(255, 107, 53, 0.2);
+  background: rgba(240, 103, 66, 0.2);
   color: var(--cloudm-orange);
   padding: 5px 10px;
   border-radius: 4px;
@@ -394,7 +401,7 @@ body {
 }
 
 .btn-buy:hover {
-  background: #e55a2b;
+  background: #d9572e;  /* Darker shade of brand orange */
 }
 
 .btn-pricing {
@@ -494,12 +501,12 @@ body {
 }
 
 .calc-price-display {
-  background: rgba(255, 107, 53, 0.1);
+  background: rgba(240, 103, 66, 0.1);
   padding: 30px;
   border-radius: 8px;
   margin-top: 30px;
   text-align: center;
-  border: 1px solid rgba(255, 107, 53, 0.3);
+  border: 1px solid rgba(240, 103, 66, 0.3);
 }
 
 .calc-total-price {
@@ -531,7 +538,7 @@ body {
 }
 
 .generate-quote-btn:hover {
-  background: #e55a2b;
+  background: #d9572e;  /* Darker shade of brand orange */
   transform: translateY(-1px);
 }
 
@@ -544,7 +551,7 @@ body {
   color: white;
   padding: 15px 25px;
   border-radius: 50px;
-  box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+  box-shadow: 0 4px 20px rgba(240, 103, 66, 0.4);
   cursor: pointer;
   display: none;
   font-weight: 500;
@@ -555,7 +562,7 @@ body {
 
 .cart-preview:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(255, 107, 53, 0.5);
+  box-shadow: 0 6px 25px rgba(240, 103, 66, 0.5);
 }
 
 .cart-preview.active {
@@ -700,7 +707,7 @@ body {
 
 .pricing-tier:hover {
   border-color: var(--cloudm-orange);
-  background: rgba(255, 107, 53, 0.1);
+  background: rgba(240, 103, 66, 0.1);
 }
 
 .tier-users {
@@ -769,7 +776,7 @@ body {
   font-size: 32px;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  background: linear-gradient(135deg, var(--cloudm-orange) 0%, #f7931e 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -824,9 +831,9 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  background: rgba(255, 107, 53, 0.1);
+  background: rgba(240, 103, 66, 0.1);
   border-radius: 12px;
-  border: 1px solid rgba(255, 107, 53, 0.3);
+  border: 1px solid rgba(240, 103, 66, 0.3);
   margin-bottom: 24px;
   font-size: 20px;
   color: white;
@@ -875,7 +882,7 @@ body {
 }
 
 .btn-primary:hover {
-  background: #e55a2b;
+  background: #d9572e;  /* Darker shade of brand orange */
   transform: translateY(-1px);
 }
 
